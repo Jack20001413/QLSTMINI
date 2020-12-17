@@ -1,0 +1,549 @@
+@using Application.DTOs
+@model ImportingOrderDto
+@{
+    
+    //ViewData["Title"] = "Edit";
+}
+
+<!-- Content Header (Page header) -->
+<div class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1 class="m-0 text-dark">Quản lý phiếu nhập</h1>
+      </div><!-- /.col -->
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
+          <li class="breadcrumb-item"><a asp-controller="ImportingOrder" asp-action="Index">Quản lý phiếu nhập</a></li>
+          <li class="breadcrumb-item active">Sửa phiếu</li>
+        </ol>
+      </div><!-- /.col -->
+    </div><!-- /.row -->
+  </div><!-- /.container-fluid -->
+</div>
+<!-- /.content-header -->
+<!-- Main content -->
+<section class="content">
+  <div class="containter-fluid">
+    <form asp-action="AddOrEdit" id="OrderForm" class="form-horizontal">
+      <div class="row">
+        <div class="col-9">
+          <div class="card card-success">
+            <div class="card-header">
+              <h3 class="card-title">Chi tiết Phiếu nhập hàng</h3>
+            </div>
+            <div class="card-body">
+              <div class="row form-group">
+                <div class="col-9">
+                  <label>Sản phẩm</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">
+                        <i class="fas fa-search"></i>
+                      </span>
+                    </div>
+                    <input type="text" id="productName" class="form-control" placeholder="Tìm sản phẩm">
+                    <input type="hidden" id="unit">
+                    <input type="hidden" id="orgCode">
+                    <input type="hidden" id="ProductId">
+                    <input type="hidden" id="inventoryQuantity">
+                  </div>
+                </div>
+                <div class="col-3">
+                  <label>Số lượng</label>
+                  <input id="quantity" type="number" class="form-control" value="0" min="0">
+                </div>
+              </div>  <!-- End .row form-group -->
+              <div class="row form-group">
+                <div class="col-3">
+                  <label>Đơn giá</label>
+                  <input id="unitPrice" type="text" class="form-control" disabled>
+                </div>
+                <div class="col-3">
+                  <label>Thành tiền</label>
+                  <input id="sumPrice" type="text" class="form-control" disabled>
+                </div>
+                <div class="col-6">
+                  <div class="row">
+                    <label>&nbsp;</label>
+                  </div>
+                    <button id="updateDetail" class="btn btn-info" style="color:white; display: none;">
+                      <i class="fas fa-edit"></i>
+                      Sửa sản phẩm
+                    </button>
+                    <button id="addToList" class="btn btn-success" style="color:white;">
+                      <i class="fas fa-plus-circle"></i>
+                      Thêm sản phẩm
+                    </button>
+                  <span>&nbsp;</span>
+                  <button id="cancel" class="btn btn-danger" style="color:white;">
+                    <i class="fas fa-window-close"></i>
+                    Hủy
+                  </button>
+                </div>
+              </div>  <!-- End .row form-group -->
+
+              <!-- Order's details table -->
+              <div class="form-group">
+                <table id="detailsTable" class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th>Mã sản phẩm</th>
+                      <th>Tên sản phẩm</th>
+                      <th>Đơn vị tính</th>
+                      <th>Số lượng</th>
+                      <th>Đơn giá</th>
+                      <th>Thành tiền</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @foreach(var item in Model.ImportingTransactions)
+                    {
+                      <tr>
+                        <td>@Html.DisplayFor(modelItem => item.ProductId)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Product.Name)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Product.Unit)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+                        <td>@Html.DisplayFor(modelItem => item.UnitPrice)</td>
+                        <td>@Html.DisplayFor(modelItem => item.TotalPrice)</td>
+                        <td>
+                          <div class="row">
+                            <span>&nbsp;</span>
+                            <input type="hidden" value="@item.Product.OrgCode" id="td-orgCode">
+                            <a href="#" id="edit-btn" class="btn btn-primary"><i class="fa fa-edit"></i></a>
+                            <span>&nbsp;</span>
+                            <a data-itemId="0" href="#" class="deleteItem btn btn-danger"><i class="fas fa-trash"></i></a>
+                          </div>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div> <!-- End .row form-group -->
+            </div>  <!-- End .card-body -->
+          </div>  <!-- End .card -->
+        </div>  <!-- End .col-9 -->
+
+        <!-- Right card -->
+        <div class="col-3">
+          <div class="card card-primary">
+            <div class="card-header">
+              <h3 class="card-title">Phiếu nhập hàng</h3>
+            </div>
+            <div class="card-body">
+              <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+              <div class="row form-group">
+                <label asp-for="EmployeeId">Nhân viên</label>
+                <select asp-for="EmployeeId" asp-items="ViewBag.Employees" class="form-control"></select>
+              </div>
+              <input hidden type="date" class="form-control" asp-for="CreatedDate">
+              <div class="row form-group">
+                <label asp-for="VendorId">Nhà cung cấp</label>
+                <select asp-for="VendorId" asp-items="ViewBag.Vendors" class="form-control"></select>
+              </div>
+              <div class="row form-group">
+                <div class="col-6">
+                  <label asp-for="NameCode">Mã hóa đơn</label>
+                </div>
+                <div class="col-6">
+                  <input asp-for="NameCode" type="text" class="form-control" disabled>
+                  <span class="text-danger" asp-validation-for="NameCode"></span>
+                </div>
+              </div>
+              <div class="row form-group">
+                <div class="col-4">
+                  <label asp-for="Status">Trạng thái</label>
+                </div>
+                <div class="col-8">
+                  <select asp-for="Status" class="form-control">
+                    <option value="0">Phiếu tạm</option>
+                    <option value="1">Đã thanh toán</option>
+                    <option value="2">Đã hủy</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row form-group">
+                <div class="col-6">
+                  <label asp-for="TotalPrice">Tổng tiền</label>
+                </div>
+                <div class="col-6">
+                  <input asp-for="TotalPrice" type="text" class="form-control">
+                </div>
+              </div>
+            </div>  <!-- End .card-body -->
+            <div class="card-footer">
+              <div class="row justify-content-between">
+                <div class="pl-0">
+                  <a asp-controller="ImportingOrder" asp-action="Index" class="btn btn-default">
+                    <i class="fas fa-times mr-1"></i>
+                    Đóng
+                  </a>
+                </div>
+                <div class="pr-0">
+                  <input type="hidden" asp-for="Id" id="OrderId">
+                  <button class="btn btn-primary" type="submit" id="saveOrder">
+                    <i class="far fa-save"></i>
+                    Lưu
+                  </button>
+                </div> 
+              </div>
+            </div>
+          </div>  <!-- End .card -->
+        </div>  <!-- End .col-3 -->
+      </div>  <!-- End .row -->
+    </form>
+  </div>  <!-- End .container-fluid -->
+</section>
+
+@section Scripts{
+  <script>
+    $.widget.bridge('uibutton', $.ui.button)
+  </script>
+
+  <script>
+
+    var deleteValue;
+    var transaction = new Array(); // Create A List That Tracks The Added Items
+
+    /*If This Page Is For Editing, Then List Transaction Has To Be Added At The First Place*/
+    $(document).ready(function(){
+        $.each($("#detailsTable tbody tr"), function () {
+            transaction.push($("#td-orgCode").val());
+            
+        })
+
+        console.log("mảng lúc khởi tạo: " + transaction.toString());
+    });
+
+    //Add Multiple Order.
+    var i = 0;
+
+    $("#addToList").click(function (e) {
+        e.preventDefault();
+
+        if ($.trim($("#productName").val()) == "" || $.trim($("#unitPrice").val()) == "" || $.trim($("#sumPrice").val()) == "") {
+          alert("Tên sản phẩm hoặc đơn giá hoặc tổng tiền không được để trống !") 
+          return;
+        }
+
+        if ($('#quantity').val() == 0 || $('#quantity').val() < 0)
+        {
+          alert("Số lượng hàng hóa không được nhỏ hơn hoặc bằng 0 !");
+          return;
+        }
+
+        /*Áp dụng bên phía hóa đơn
+        if($("#quantity").val() >= parseInt($("#inventoryQuantity").val()))
+        {
+          alert("Số lượng mua không được quá số lượng tồn kho !");
+          return;
+        }
+        */
+
+        /*Check if the searched product is in the list*/
+        if($.inArray($("#orgCode").val(),transaction,0) >= 0)
+        {
+          alert("Hàng hóa đã tồn tại !");
+          return;
+        }
+
+        var productName = $("#productName").val(),
+            unitPrice = $("#unitPrice").val(),
+            quantity = $("#quantity").val(),
+            total = $("#sumPrice").val(),
+            detailsTableBody = $("#detailsTable tbody"),
+            unit = $("#unit").val(),
+            productId = $("#ProductId").val(),
+            orgCode = $("#orgCode").val();
+            
+        i++;
+
+        var productItem = '<tr><td>' + productId + '</td><td>' + productName + '</td><td>' + unit + '</td><td>' + quantity + '</td><td>' + unitPrice + '</td><td>' + total + '</td><td><input type="hidden" value="'+ orgCode +'"><a href="#" id="edit-btn" class="btn btn-primary"><i class="fa fa-edit"></i></a><span>&nbsp;</span><a data-itemId="0" href="#" class="deleteItem btn btn-danger"><i class="fas fa-trash"></i></a></td></tr>';
+        detailsTableBody.append(productItem);
+
+        /*Add the product's code into array so that the added product(s) would not be added again*/
+        transaction.push(orgCode);
+
+        /*Add the total price of one product to the bill's total price*/
+        $("#TotalPrice").val(parseInt($("#TotalPrice").val()) + parseInt(total));
+        clearItem();
+    });
+    
+    //After Add A New Product To The List, Clear Inputs To Add A New Product.
+    function clearItem() {
+        $("#productName").val('');
+        $("#unitPrice").val('');
+        $("#quantity").val(0);
+        $("#sumPrice").val('');
+    }
+    
+    // Press cancel button to wipe away content of inputs
+    $("#cancel").on("click",function(e){
+      e.preventDefault();
+
+      console.log($("#updateDetail").css("display") === "inline");
+
+      if($("#updateDetail").css("display") === "inline"){
+        $('#updateDetail').css('display','none');
+        $('#addToList').css('display','inline');
+        $("#productName").attr('disabled',false);
+        clearItem();
+      }else{
+        clearItem();
+      }
+      
+    });
+
+    // After Add A New Order In The List, If You Want, You Can Remove It.
+    $(document).on('click', 'a.deleteItem', function (e) {
+        e.preventDefault();
+        var $self = $(this);
+        var row = $(this).parents('tr');
+        if ($(this).attr('data-itemId') == "0") {
+            $(this).parents('tr').css("background-color", "#ff6347").fadeOut(800, function () {
+                /*Remove a product out of the list*/
+              
+                transaction.splice($.inArray(orgCode,transaction),1);
+                deleteTotal = row.find("td:eq(5)").text();
+                //console.log(transaction.toString());
+
+                /*Subtract a product's price from the bill's total price */
+                $("#TotalPrice").val(parseInt($("#TotalPrice").val()) - parseInt(deleteTotal));
+
+                $(this).remove();
+            });
+        }
+    });
+
+    var tempIndex;
+    // After clicking the edit button from table, sending the data from table to the form
+    $(document).on('click', "#edit-btn",function(e) {
+          e.preventDefault();
+          $('#updateDetail').css('display','inline');
+          $('#addToList').css('display','none');
+          $("#productName").attr('disabled',true);
+          $tr = $(this).closest('tr');
+
+          tempIndex = $tr.index();
+
+          var data = $tr.children("td").map(function() {
+              return $(this).text();
+          }).get();
+
+          console.log(data);
+
+          $('#productName').val(data[1]);
+          $('#unit').val(data[2]);
+          $('#quantity').val(data[3]);
+          $('#unitPrice').val(data[4]);
+          $('#sumPrice').val(data[5]);
+    });
+
+    /*After clicking the edit button in table row and finishing editing in inputs, click to save the edited 
+    data*/
+    $("#updateDetail").click(function (e){
+        e.preventDefault();
+
+        var row = $("#detailsTable tbody tr:eq(" + tempIndex + ")");
+        $("#TotalPrice").val(parseInt($("#TotalPrice").val()) - parseInt(row.find("td:eq(5)").text()));
+        //console.log(row.find("td:eq(5)").text());
+        row.find("td:eq(3)").text($('#quantity').val());
+        row.find("td:eq(5)").text($('#sumPrice').val());
+        $("#TotalPrice").val(parseInt($("#TotalPrice").val()) + parseInt($("#sumPrice").val()));
+        //console.log($("#sumPrice").val());
+
+        $('#updateDetail').css('display','none');
+        $('#addToList').css('display','inline');
+        $("#productName").attr('disabled',false);
+        clearItem(); 
+    });
+
+    $(document).on('change','#quantity',function (e){
+      //e.prevnentDefault();
+      $('#sumPrice').val($('#quantity').val() * parseInt($('#unitPrice').val()));
+    });
+
+    
+    //After Click Save Button Pass All Data View To Controller For Save Database
+    function saveOrder(data) {
+        return $.ajax({
+            contentType: false,//'application/json; charset=utf-8',
+            //dataType: 'json',
+            type: 'POST',
+            url: "/ImportingOrder/Edit",
+            processData: false,
+            data: data,
+            success: function (result) {
+                //console.log(order);
+                console.log(result);
+                alert("Lưu thành công !")
+                window.location.href = "/ImportingOrder/Index";
+            },
+            error: function () {
+                alert("Lưu thất bại !")
+            }
+        });
+    }
+
+    //Collect Multiple Order List For Pass To Controller
+    $("#saveOrder").click(function (e) {
+        e.preventDefault();
+
+        if(parseInt($("#TotalPrice").val()) === 0)
+        {
+          alert("Phiếu nhập phải có chi tiết !");
+          return;
+        }
+
+        var order = new FormData();
+        order.append("Id",$("#OrderId").val());
+        order.append("CreatedDate", $("#CreatedDate").val());
+        order.append("NameCode",$("#NameCode").val());
+        order.append("VendorId",$("#VendorId").val());
+        order.append("EmployeeId",$("#EmployeeId").val());
+        order.append("TotalPrice",$("#TotalPrice").val());
+        order.append("Status",$("#Status").val());
+      
+
+        var transArr = [];
+        transArr.length = 0;
+
+        $.each($("#detailsTable tbody tr"), function () {
+            transArr.push({
+                productId: $(this).find('td:eq(0)').html(),
+                productName: $(this).find('td:eq(1)').html(),
+                quantity: $(this).find('td:eq(3)').html(),
+                unitPrice: $(this).find('td:eq(4)').html(),
+                totalPrice: $(this).find('td:eq(5)').html(),
+                //product: $(this).find('td:eq(6)').val()
+            });
+            
+        });
+        
+        for (var i = 0; i < transArr.length; i++) {
+          order.append("ImportingTransactions["+ i + "].ProductId", transArr[i].productId);
+          order.append('ImportingTransactions['+ i + '].Quantity', transArr[i].quantity);
+          order.append('ImportingTransactions['+ i + '].UnitPrice', transArr[i].unitPrice);
+          order.append('ImportingTransactions['+ i + '].TotalPrice', transArr[i].totalPrice);
+          console.log(transArr[i]);
+        }
+        console.log(order);
+        
+        $.when(saveOrder(order)).then(function (response) {
+            console.log(response);
+        }).fail(function (err) {
+            console.log(err);
+        });
+    });
+
+  $("#productName").autocomplete({
+      highlightClass: "bold-text",
+      search: function (event, ui) {
+          // $(this).addClass('working');
+      },
+      source: function (request, response) {
+          var products = new Array();
+          $.ajax({
+              url: "/ImportingOrder/Search",
+              async: false,
+              data: {
+                  "parm": request.term
+              },
+              success: function (data) {
+                  if (data.length === 0) {
+                      products[0] = {
+                          label: "Không có kết quả",
+                          Id: ""
+                      };
+                  } else {
+                      for (var i = 0; i < data.length; i++) {
+                          products[i] = {
+                              label: data[i].name,
+                              Id: data[i].id,
+                              unit: data[i].unit,
+                              categoryId: data[i].categoryId,
+                              brandId: data[i].brandId,
+                              orgCode: data[i].orgCode,
+                              description: data[i].description,
+                              importPrice: data[i].importPrice,
+                              salePrice: data[i].salePrice,
+                              quantity: data[i].quantity,
+                          };
+                          //console.log(data[i]);
+                      }
+                      
+                  }
+              }
+          });
+          response(products);
+      },
+      minLength: 2,
+      select: function (event, ui) {
+          /*Select Function works on when you selects element from Response List*/
+          var unit = ui.item.unit;
+          var importPrice = ui.item.importPrice;
+          var orgCode = ui.item.orgCode;
+          var id = ui.item.Id;
+          var inventQuantity = ui.item.quantity;
+          $.ajax({
+              async: false,
+              //url: "/ControllerName/JsonActionResultonClick",
+              data: {
+                  "id": ui.item.Id
+              },
+              success: function (data) {
+                  // Do your success logic here
+                  // console.log(data);
+                 // $("#unit").val() = ui.item.unit;
+                 // $("#unitPrice").val() = ui.item.importPrice;
+                $("#unit").val(unit) ;
+                $("#unitPrice").val(importPrice);
+                $("#orgCode").val(orgCode);
+                $("#ProductId").val(id);
+                $("#inventoryQuantity").val(inventQuantity);
+
+                $('#sumPrice').val($('#quantity').val() * parseInt($('#unitPrice').val()));
+                
+              },
+              error: function (xhr, ajaxOptions, thrownError) {
+                  // Error Logic here
+              }
+          });
+      },
+      open: function () {
+          // $(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+      },
+      close: function () {
+          // $(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+      }
+  });
+  
+  </script>
+}
+
+<script>
+  $(function () {
+    $(document).ready(function(){
+      $("#detailsTable").DataTable({
+        "responsive": true,
+        "searching": false,
+        "ordering": false,
+        "autoWidth": false,
+        "paging": false,
+        "info": false,
+        "language": {
+          lengthMenu: "Hiển thị _MENU_ dòng",
+          info: "Hiển thị trang _PAGE_ trong tổng _PAGES_ trang",
+          zeroRecords: "Dữ liệu không tồn tại",
+          previous: "Trước",
+          paginate: {
+          "next": "Sau",
+          "previous": "Trước"
+          },
+        }
+      });
+    });
+  })
+</script>

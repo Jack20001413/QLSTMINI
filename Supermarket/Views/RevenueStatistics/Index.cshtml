@@ -1,0 +1,17 @@
+@using Application.DTOs
+@model IEnumerable<SellingOrderDto>
+
+@{ 
+  ViewData["Title"] = "Index";
+  ViewBag.Current = "RevenueStatistics";
+}
+
+<div id="view-all">
+    @await Html.PartialAsync("_ViewAll", Model)
+</div>
+
+@section Scripts{
+  
+  @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+}

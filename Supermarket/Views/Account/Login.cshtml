@@ -1,0 +1,100 @@
+﻿@{ 
+   Layout = null;
+   ViewData["Title"] = "Login";
+   ViewBag.Current = "Login"; 
+}  
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Siêu thị tình yêu</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- icheck bootstrap -->
+  <link rel="stylesheet" href="../../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+</head>
+<body class="hold-transition login-page" style="background-image: url('../dist/img/empty-top-wooden-table-with-supermarket-blur-background_36051-467.jpg'); background-repeat: no-repeat; background-size: cover;">
+<div class="login-box">
+  <div class="login-logo">
+    <h2 style="color: #F2F2F2; font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; text-shadow: 3px 3px #0D0D0D;"><b>SIÊU THỊ TÌNH YÊU</b></h2>
+  </div>
+  <!-- /.login-logo -->
+  <div class="card">
+    <div class="card-body login-card-body">
+      <p class="login-box-msg">Đăng nhập để bắt đầu</p>
+
+      <form>
+        <div class="input-group mb-3">
+          <input type="text" id="email" name="email" class="form-control" placeholder="Email">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-envelope"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="password" id="password" name="password" class="form-control" placeholder="Mật khẩu">
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock"></span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-7"></div>
+          <!-- /.col -->
+          <div class="col-5">
+            <button type="button" value="Login" class="btn btn-primary btn-block" onclick="Validate()">Đăng nhập</button>
+          </div>
+          <!-- /.col -->
+        </div>
+      </form>
+    </div>
+    <!-- /.login-card-body -->
+  </div>
+</div>
+<!-- /.login-box -->
+
+</body>
+</html>
+
+<script>
+   function Validate() {
+    $.ajax(
+    {
+      type: "POST",
+      url: '@Url.Action("Validate", "Account")',
+      data: {
+        email: $('#email').val(),
+        password: $('#password').val()
+      },
+      error: function (result) {
+        alert("Đã phát sinh lỗi, vui lòng thử lại!");
+      },
+      success: function (result) {
+        console.log(result);
+        if (result.status == true) {
+          window.location.href = '@Url.Action("Index", "Home")';
+        }
+        else {
+          alert(result.message);
+        }
+      }
+    });
+  }
+</script>
+<!-- jQuery -->
+<script src="~/plugins/jquery/jquery.min.js"></script>
+<!-- jQuery UI 1.11.4 -->
+<script src="~/plugins/jquery-ui/jquery-ui.min.js"></script>
+<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->

@@ -1,0 +1,74 @@
+@using Application.DTOs
+@model ProductDto
+@{
+    Layout = null;
+    ViewData["Title"] = "Edit";
+}
+
+<form id="ProductForm" asp-action="AddOrEdit" asp-route-id="@Model.Id" onsubmit="return jQueryAjaxPost(this);">
+  <div class="modal-body">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id"/>
+    <!--<input type="hidden" asp-for="product.Name">-->
+    <div class="row form-group">
+      <div class="col-6">
+        <label asp-for="CategoryId">Loại Sản Phẩm</label>
+        <select asp-for="CategoryId" asp-items="ViewBag.Category" class="form-control"></select>
+      </div>
+      <div class="col-6">
+        <label asp-for="BrandId">Nhãn Hiệu</label>
+        <select asp-for="BrandId" asp-items="ViewBag.Brand" class="form-control"></select>
+      </div>
+    </div>
+    <div class="row form-group">
+      <div class="col-8">
+        <label asp-for="Name">Tên sản phẩm</label>
+        <input asp-for="Name" type="text" class="form-control" placeholder="Tên sản phẩm" />
+        <span class="text-danger" asp-validation-for="Name"></span>
+      </div>
+      <div class="col-4">
+        <label asp-for="Unit">Đơn vị</label>
+        <input asp-for="Unit" type="text" class="form-control" placeholder="Đơn vị" />
+        <span class="text-danger" asp-validation-for="Unit"></span>
+      </div>
+    </div>
+    <div class="row form-group">
+      <div class="col-4">
+        <label asp-for="OrgCode">Mã CODE</label>
+        <input asp-for="OrgCode" type="text" class="form-control" placeholder="Mã Code">
+        <span class="text-danger" asp-validation-for="OrgCode"></span>
+      </div>
+      <div class="col-4">
+        <label asp-for="ImportPrice">Giá nhập</label>
+        <input asp-for="ImportPrice" type="number" class="form-control" placeholder="Giá nhập">
+        <span class="text-danger" asp-validation-for="ImportPrice"></span>
+      </div>
+      <div class="col-4">
+        <label asp-for="SalePrice">Giá xuất</label>
+        <input asp-for="SalePrice" type="number" class="form-control" placeholder="Giá xuất">
+        <span class="text-danger" asp-validation-for="SalePrice"></span>
+      </div>
+    </div>
+    <div class="row form-group">
+      <div class="col-12">
+        <label asp-for="Description">Mô tả</label>
+         <textarea asp-for="Description" type="text" class="form-control" placeholder="Mô tả"></textarea>
+        <span class="text-danger" asp-validation-for="Description"></span>
+      </div>
+    </div>
+    <div class="modal-footer pb-0 pl-0 pr-0 justify-content-between">
+      <button data-dismiss="modal" type="button" class="btn btn-default">
+        <i class="fas fa-times mr-1"></i>
+        Đóng
+      </button>
+      <button type="submit" value="Submit" class="btn btn-primary">
+        <i class="far fa-save mr-1"></i>
+        Lưu
+      </button>
+    </div>
+  </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

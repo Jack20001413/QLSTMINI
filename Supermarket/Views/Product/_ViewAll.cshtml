@@ -1,0 +1,109 @@
+@using Application.DTOs
+@model IEnumerable<ProductDto>
+
+<!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-bold">QUẢN LÝ SẢN PHẨM</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+              <li class="breadcrumb-item active">Quản lý sản phẩm</li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="card">
+              <!-- /.card-header -->
+              <div class="card-body">
+                <table id="example1" class="table table-bordered table-striped">
+                  <div class="block-buttons-right float-sm-right text-center">
+                    <button onclick="showInPopup('@Url.Action("AddOrEdit", "Product", new {id = 0}, Context.Request.Scheme)', 'Thêm sản phẩm')" class="btn btn-success">
+                      <i class="fas fa-plus mr-1"></i>
+                      Thêm mới
+                    </button>
+                  </div>
+                  <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Mã sản phẩm</th>
+                    <th>Tên</th>
+                    <th>Loại SP</th>
+                    <th>Nhãn Hiệu</th>
+                    <th>Số Lượng</th>
+                    <th>Giá Nhập</th>
+                    <th>Giá Bán</th>
+                    <th></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    @foreach(var item in Model)
+                    {
+                        <tr>
+                          <td>@Html.DisplayFor(modelItem => item.Id)</td>
+                          <td>@Html.DisplayFor(modelItem => item.OrgCode)</td>
+                          <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                          <td>@Html.DisplayFor(modelItem => item.Category.Name)</td>
+                          <td>@Html.DisplayFor(modelItem => item.Brand.Name)</td>
+                          <td>@Html.DisplayFor(modelItem => item.Unit)</td>
+                          <td>@Html.DisplayFor(modelItem => item.ImportPrice)</td>
+                          <td>@Html.DisplayFor(modelItem => item.SalePrice)</td>
+                          <td>
+                            <div class="d-flex flex-nowrap">
+                              <button onclick="showInPopup('@Url.Action("AddOrEdit","Product", new {id = item.Id},Context.Request.Scheme)',' Cập nhật thông tin sản phẩm')" class="btn btn-secondary mr-1">
+                                <i class="fas fa-edit"></i>           
+                              </button> 
+                              
+                              <form asp-action="Delete" asp-route-id="@item.Id" onsubmit="return jQueryAjaxDelete(this)">
+                                <button type="submit" class="btn btn-danger">
+                                  <i class="fas fa-trash"></i>
+                                </button>
+                              </form>
+                            </div>
+                          </td>
+                        </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+@section Scripts{
+}
+<!-- jQuery 
+<script src="~/plugins/jquery/jquery.min.js"></script> -->
+<!-- page script -->
+<script>
+  $(function () {
+    $(document).ready(function(){
+      $(".table").DataTable({
+        "responsive": true,
+        "searching": false,
+        "ordering": false,
+        "autoWidth": false,
+        "language": {
+          lengthMenu: "Hiển thị _MENU_ dòng",
+          info: "Hiển thị trang _PAGE_ trong tổng _PAGES_ trang",
+          zeroRecords: "Dữ liệu không tồn tại",
+          previous: "Trước",
+          paginate: {
+          "next": "Sau",
+          "previous": "Trước"
+          },
+        }
+      });
+    });
+  })
+</script>

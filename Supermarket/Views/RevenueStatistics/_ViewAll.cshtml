@@ -1,0 +1,267 @@
+@using Application.DTOs
+@model IEnumerable<SellingOrderDto>
+@section Scripts{
+}
+<!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-4">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark">Thống kê doanh thu </h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+              <li class="breadcrumb-item"><a href="#">Trang chủ</a></li>
+              <li class="breadcrumb-item active">Thống kê doanh thu  </li>
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+
+        <div class="row mb-2">
+          <div class="col-sm-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+              <div class="card-body">
+                <div class="row no-gutters align-items-center">
+
+                  <div class="col mr-2">
+                     <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                       <lable></lable>
+                         Số tiền bán được</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800"> @Model.Sum(i=>i.TotalPrice) </div>
+                  </div>
+                    <div class="col-auto">
+                      <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                     </div>
+                </div>
+              </div>
+            </div>  
+          </div><!-- /.col -->
+         
+        <div class="col-sm-4">
+            <div class="card border-left-info shadow h-100 py-2">
+              <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                  <div class="col mr-2">
+                    <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                      Tất Cả Hoá Đơn
+                    </div>
+                    <div class="h5 mb-0 font-weight-bold text-gray-800">                                                 <label id="lbl_countOrder"></label>
+                      <label id="lbl_countOrder"></label>
+                    </div>
+                  </div>
+                    <div class="col-auto">
+                     <i class="fas fa-money-bill-alt fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+              </div>
+            </div>  
+          </div><!-- /.col -->
+
+       <div class="col-sm-4">
+            <div class="card border-left-success shadow h-100 py-2">
+              <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                  
+                  <div class="col mr-2">
+                     <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                       <lable id="lbl_Title"></lable>
+                        
+                         </div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800"> 
+                      <label id="lbl_startDate"></label>
+                      <label id="lbl_space"></label>
+                      <label id="lbl_endDate"></label>
+                      </div>
+                  </div>
+                    <div class="col-auto">
+                      <i class="fas fa-calendar-alt fa-2x text-gray-300"></i>
+                     </div>
+                </div>
+              </div>
+            </div>  
+          </div><!-- /.col -->
+
+        </div><!-- /.row -->
+        
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+          <div class="card card-success">
+              <!-- /.card-header -->
+              <div class="card-header">
+                 <h3 class="card-title">Xem Doanh Thu Theo Khoảng Thời Gian:  </h3>
+              </div>
+              <div class="card-body">
+                <table id="example1" class="table table-bordered table-striped">
+                  <div class="block-buttons-right float-sm-right text-center">
+                  <form id="dateInput" method="get" asp-action="Index" onsubmit="return validate()">     
+                    <a asp-action="Index" asp-controller="RevenueStatistics"> 
+                      <button id="btn_return" type="button" class="btn btn-info" asp-action="Index"  >
+                     <i class="fas fa-undo mr-1"></i>
+                      Làm Mới
+                    </button>
+                    </a>
+                    <input id="input_startDate" name="startDate" type="text" placeholder="Ngày bắt đầu" onfocus="(this.type='date')">
+                    -----
+                    <input id="input_endDate" name="endDate" type="text" placeholder="Ngày kết thúc" onfocus="(this.type='date')">
+                    <button type="submit" value="Submit" class="btn btn-success" >
+                      <i class="fas fa-plus mr-1"></i>
+                      Xem Danh Sách
+                    </button>
+                  </form>
+                  </div>
+                  <thead>
+                  <tr>
+                    <th>Khách hàng</th>
+                    <th>Ngày bán</th>
+                    <th>Tổng giá</th>
+                    <th>Trạng thái</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                    @foreach(var item in Model)
+                    {
+                        <tr>
+                          <td>@Html.DisplayFor(modelItem => item.Customer.Fullname)</td>
+                          <td>@Convert.ToDateTime(item.CreatedDate).ToString("MM/dd/yyyy")</td>
+                          <td>@Html.DisplayFor(modelItem => item.TotalPrice)</td>
+                          @if(item.Status == 0)
+                          {
+                            <td>Phiếu tạm</td>
+                          }  
+                          else if(item.Status == 1)
+                          {
+                            <td>Đã thanh toán</td>
+                          }
+                          else
+                          {
+                            <td>Đã hủy</td>
+                          }
+                         
+                              
+                              @* <button onclick="showInPopup('@Url.Action("AddOrEdit","ImportingOrder", new {id = item.Id},Context.Request.Scheme)',' Cập nhật thông tin phiếu nhập')" class="btn btn-secondary mr-1">
+                                <i class="fas fa-edit"></i>           
+                              </button> 
+                              
+                              <form asp-action="Delete" asp-route-id="@item.Id" onsubmit="return jQueryAjaxDelete(this)">
+                                <button type="submit" class="btn btn-danger">
+                                  <i class="fas fa-trash"></i>
+                                </button> 
+                              </form>*@
+                        </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+
+
+
+<script>
+  var countOrder= RowCount();
+  document.getElementById("lbl_countOrder").innerHTML= countOrder;
+ 
+ // document.getElementById("lbl_startDate").innerHTML= getDate() ;
+
+  function RowCount()
+  { 
+    var table = document.getElementById("example1"); 
+    var tbodyRowCount = table.tBodies[0].rows.length; 
+    lbl_countOrder = tbodyRowCount;
+    console.log(lbl_countOrder);
+    return lbl_countOrder;
+  }
+
+
+
+var startDate= "@Convert.ToDateTime(@ViewBag.Revenue.startDate).ToString("MM/dd/yyyy")" ;
+var endDate= "@Convert.ToDateTime(@ViewBag.Revenue.endDate).ToString("MM/dd/yyyy")";
+var currentDate="@Convert.ToDateTime(@ViewBag.Revenue.currentDate).ToString("MM/dd/yyyy")";
+console.log(currentDate);
+console.log(endDate);
+console.log(startDate);
+
+function validate() {
+  startDate= document.getElementById("input_startDate").value;
+  endDate= document.getElementById("input_endDate").value;
+   if (startDate=="" && endDate=="")
+  {
+    alert("Không được để trống ngày bắt đầu và ngày kết thúc");
+    return false;
+  }
+  if(startDate=="")
+  {
+    alert("Chưa nhập ngày bắt đầu ");
+    return false;
+  }
+  if(endDate=="")
+  {
+    alert("Chưa nhập ngày kết thúc");
+    return false;
+  }
+
+   if (startDate!="" && endDate!="")
+  {
+    return true;
+  }
+}
+
+ if (currentDate=="01/01/0001" && endDate!="01/01/0001" && startDate!="01/01/0001" )
+  {
+    document.getElementById("lbl_Title").innerHTML="NGÀY HÔM NAY";
+    let today=new Date()
+    var currentdate= (today.getMonth()+1)+'/'+ today.getDate()+'/'+ today.getFullYear();
+    document.getElementById("lbl_startDate").innerHTML= currentdate ;   
+    document.getElementById("input_startDate").value= startDate;
+    document.getElementById("input_endDate").value= endDate;
+  }
+if (currentDate!="01/01/0001")
+{
+    document.getElementById("lbl_startDate").innerHTML= currentDate ;   
+    document.getElementById("lbl_Title").innerHTML="NGÀY HÔM NAY";
+    document.getElementById("btn_return").style.visibility="hidden";
+
+   
+}
+
+ 
+
+
+
+</script> 
+
+<!-- jQuery 
+<script src="~/plugins/jquery/jquery.min.js"></script> -->
+<!-- page script -->
+<script>
+  $(function () {
+    $(document).ready(function(){
+      $(".table").DataTable({
+        "responsive": true,
+        "searching": false,
+        "ordering": false,
+        "autoWidth": false,
+        "language": {
+          lengthMenu: "Hiển thị _MENU_ dòng",
+          info: "Hiển thị trang _PAGE_ trong tổng _PAGES_ trang",
+          zeroRecords: "Dữ liệu không tồn tại",
+          previous: "Trước",
+          paginate: {
+          "next": "Sau",
+          "previous": "Trước"
+          },
+        }
+      });
+    });
+  })
+</script>

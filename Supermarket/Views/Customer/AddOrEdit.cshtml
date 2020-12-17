@@ -1,0 +1,70 @@
+@using Application.DTOs
+@model CustomerDto
+@{
+    Layout = null;
+    ViewData["Title"] = "Edit";
+}
+
+<form id="CustomerForm" asp-action="AddOrEdit" asp-route-id="@Model.Id" onsubmit="return jQueryAjaxPost(this);">
+  <div class="modal-body">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="Id"/>
+    <!--<input type="hidden" asp-for="CustomerGroup.Name">-->
+    <div class="row form-group">
+      <div class="col-8">
+        <label asp-for="Fullname">Họ Tên</label>
+        <input asp-for="Fullname" type="text" class="form-control" placeholder="Họ tên" />
+        <span class="text-danger" asp-validation-for="Fullname"></span>
+      </div>
+      <div class="col-4">
+        <label asp-for="CardId">CMND</label>
+        <input asp-for="CardId" type="text" class="form-control" placeholder="Số CMND" />
+        <span class="text-danger" asp-validation-for="CardId"></span>
+      </div>
+    </div>
+    <div class="row form-group">
+      <div class="col-12">
+        <label asp-for="Address">Địa chỉ</label>
+        <input asp-for="Address" type="text" class="form-control" placeholder="Địa chỉ">
+        <span class="text-danger" asp-validation-for="Address"></span>
+      </div>
+    </div>
+    <div class="row form-group">
+      <div class="col-4">
+        <label asp-for="Phone">Điện thoại</label>
+        <input asp-for="Phone" type="text" class="form-control" placeholder="Điện thoại">
+        <span class="text-danger" asp-validation-for="Phone"></span>
+      </div>
+      <div class="col-8">
+        <label asp-for="Email">Email</label>
+        <input asp-for="Email" type="text" class="form-control" placeholder="Email">
+        <span class="text-danger" asp-validation-for="Email"></span>
+      </div>
+    </div>
+    <div class="row form-group">
+      <div class="col-6">
+        <label asp-for="BirthDate">Ngày sinh</label>
+        <input type="date" class="form-control" asp-for="BirthDate">
+        <span class="text-danger" asp-validation-for="BirthDate"></span>
+      </div>
+      <div class="col-6">
+        <label asp-for="CustomerGroupId">Loại nhóm</label>
+        <select asp-for="CustomerGroupId" asp-items="ViewBag.CustomerGroup" class="form-control"></select>
+      </div>
+    </div>
+    <div class="modal-footer pb-0 pl-0 pr-0 justify-content-between">
+      <button data-dismiss="modal" type="button" class="btn btn-default">
+        <i class="fas fa-times mr-1"></i>
+        Đóng
+      </button>
+      <button type="submit" value="Submit" class="btn btn-primary">
+        <i class="far fa-save mr-1"></i>
+        Lưu
+      </button>
+    </div>
+  </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
